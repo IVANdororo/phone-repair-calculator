@@ -91,6 +91,35 @@
 6. 10% скидка = -800 руб.
 7. Итого: 7200 руб.
 
+```text
+phone-repair-calculator/
+│
+├── README.md
+├── .gitignore
+│
+├── src/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   ├── input_handler.py
+│   ├── calculator.py
+│   ├── logger.py
+│   └── receipt.py
+│
+├── docs/
+│   ├── .gitkeep
+│   └── module_diagram.md
+│
+├── tests/
+│   └── .gitkeep
+│
+├── logs/
+│   └── .gitkeep
+│
+└── examples/
+    └── .gitkeep
+```
+    
 ```mermaid
 graph TD
     User(("Пользователь")) -->|Ввод данных| Main
