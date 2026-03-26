@@ -90,3 +90,28 @@
 5. x1.0
 6. 10% скидка = -800 руб.
 7. Итого: 7200 руб.
+
+```mermaid
+graph TD
+    User(("Пользователь")) -->|Ввод данных| Main
+    
+    subgraph "Модули программы"
+        Main[main.py<br/>Оркестратор]
+        
+        Main -->|1. Запрос данных| Input[input_handler.py<br/>Ввод и валидация]
+        Main -->|2. Передача данных| Calc[calculator.py<br/>Бизнес-логика]
+        Main -->|3. Логирование| Logger[logger.py<br/>Логирование]
+        Main -->|4. Формирование чека| Receipt[receipt.py<br/>Вывод результата]
+        
+        Input -->|Чтение справочников| Config[config.py<br/>Конфигурация]
+        Calc -->|Чтение тарифов| Config
+        Calc -->|Запись расчетов| Logger
+        
+        Calc -->|Расчет скидки| Discount[calc_discount<br/>SERVICE10 - общая 10%<br/>REMONT26 - работы 15%]
+        Calc -->|Коэффициент срочности| Urgency[calc_urgency_multiplier<br/>1.0 / 1.3 / 1.5]
+    end
+    
+    subgraph "Внешние ресурсы"
+        Logger -->|Запись| LogFile[logs/*.log]
+        Receipt -->|Вывод| Console[(Консоль)]
+    end
