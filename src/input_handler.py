@@ -20,7 +20,6 @@ def get_model():
     else:
         return "Other"
 
-
 def get_repair():
     """Спрашиваем тип ремонта"""
     print("\nВыберите тип ремонта:")
@@ -37,12 +36,10 @@ def get_repair():
     else:
         return "motherboard"
 
-
 def get_parts():
     """Спрашиваем стоимость запчастей"""
     cost = input("Введите стоимость запчастей (руб): ")
     return float(cost)
-
 
 def get_urgency():
     """Спрашиваем срочность"""
@@ -60,7 +57,6 @@ def get_urgency():
     else:
         return "emergency"
 
-
 def get_services():
     """Спрашиваем доп услуги"""
     print("\nДополнительные услуги:")
@@ -76,12 +72,10 @@ def get_services():
     
     return total
 
-
 def get_promocode():
     """Спрашиваем промокод"""
     code = input("Введите промокод (или Enter): ")
     return code
-
 
 def get_all_data():
     """Собираем все данные"""
