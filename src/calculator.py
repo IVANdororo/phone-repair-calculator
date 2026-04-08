@@ -1,6 +1,5 @@
 from config import PRICES, URGENCY, PROMOCODES
 
-
 def calc_labor(model, repair):
     """Считаем стоимость работы"""
     if model in PRICES:
@@ -9,7 +8,6 @@ def calc_labor(model, repair):
         model_prices = PRICES["Other"]
     
     return model_prices.get(repair, 0)
-
 
 def calc_total(data):
     """Главная функция расчета"""
