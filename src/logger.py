@@ -2,7 +2,8 @@ from datetime import datetime
 
 def write_log(message):
     """Записываем сообщение в файл лога"""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # ФИКСИРОВАННАЯ ДАТА: 8 апреля 2026 года
+    now = "2026-04-08 9:00:00"
     
     # Открываем файл для добавления
     with open("logs/log.txt", "a", encoding="utf-8") as file:
