@@ -115,9 +115,6 @@ phone-repair-calculator/
 │   └── .gitkeep
 │
 ├── logs/
-│   └── .gitkeep
-│
-└── examples/
     └── .gitkeep
 ```
     
