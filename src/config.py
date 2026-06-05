@@ -1,4 +1,3 @@
-# Базовые цены на работы (руб.)
 PRICES = {
     "iPhone": {
         "screen": 2500,
@@ -42,29 +41,21 @@ PRICES = {
     }
 }
 
-# Коэффициенты срочности
 URGENCY = {
     "normal": 1.0,
     "urgent": 1.3,
     "emergency": 1.5
 }
 
-# Дополнительные услуги
 SERVICES = {
     "home_visit": 500,
     "protective_glass": 300
 }
 
-# Промокоды
 PROMOCODES = {
     "SERVICE10": {
         "type": "total",
         "rate": 0.10,
         "description": "10% на общую сумму"
     },
-    "REMONT26": {
-        "type": "labor",
-        "rate": 0.15,
-        "description": "15% на стоимость работ"
-    }
 }
