@@ -1,44 +1,48 @@
 import tkinter as tk
 from tkinter import ttk
-from calculator import calc_total, compare_options
+from calculator import calc_total
 from config import PRICES, URGENCY, PROMOCODES
 
-PARTS_PRICES = {
-    "iPhone": {"screen": 5000, "battery": 2500, "motherboard": 8000},
-    "Samsung": {"screen": 4000, "battery": 2000, "motherboard": 7000},
-    "Xiaomi": {"screen": 3000, "battery": 1500, "motherboard": 6000},
-    "Google Pixel": {"screen": 4500, "battery": 2200, "motherboard": 7500},
-    "Other": {"screen": 2500, "battery": 1200, "motherboard": 5000}
-}
+LABOR_PRICES = PRICES
 
-PARTS_ANALOG = {
-    "iPhone": {"screen": 3500, "battery": 1800, "motherboard": 5000},
-    "Samsung": {"screen": 3000, "battery": 1500, "motherboard": 4500},
-    "Xiaomi": {"screen": 2500, "battery": 1200, "motherboard": 4000},
-    "Google Pixel": {"screen": 3200, "battery": 1600, "motherboard": 4800},
-    "Other": {"screen": 2000, "battery": 1000, "motherboard": 3500}
-}
-
-LABOR_PRICES = {
-    "iPhone": {"screen": 2500, "battery": 1200, "motherboard": 4500},
-    "Samsung": {"screen": 2200, "battery": 1000, "motherboard": 4000},
-    "Xiaomi": {"screen": 1800, "battery": 800, "motherboard": 3500},
-    "Google Pixel": {"screen": 2400, "battery": 1100, "motherboard": 4200},
-    "Other": {"screen": 1500, "battery": 700, "motherboard": 3000}
-}
+REPAIR_LIST = ["Замена экрана", "Замена аккумулятора", "Ремонт материнской платы", "Замена разъема зарядки",
+               "Ремонт кнопок", "Восстановление после воды"]
+REPAIR_KEYS = ["screen", "battery", "motherboard", "charging_port", "buttons", "water_damage"]
 
 MODEL_LIST = ["iPhone", "Samsung", "Xiaomi", "Google Pixel", "Другие"]
 MODEL_KEYS = ["iPhone", "Samsung", "Xiaomi", "Google Pixel", "Other"]
-
-REPAIR_LIST = ["Замена экрана", "Замена аккумулятора", "Ремонт материнской платы"]
-REPAIR_KEYS = ["screen", "battery", "motherboard"]
 
 URGENCY_LIST = ["Обычный", "Срочный (+30%)", "Экстренный (+50%)"]
 URGENCY_KEYS = ["normal", "urgent", "emergency"]
 URGENCY_VALUES = [1.0, 1.3, 1.5]
 
 PARTS_TYPE_LIST = ["Оригинал", "Аналог"]
-PARTS_TYPE_KEYS = ["original", "analog"]
+
+PARTS_PRICES = {
+    "iPhone": {"screen": 5000, "battery": 2500, "motherboard": 8000, "charging_port": 1500, "buttons": 800,
+               "water_damage": 0},
+    "Samsung": {"screen": 4000, "battery": 2000, "motherboard": 7000, "charging_port": 1200, "buttons": 700,
+                "water_damage": 0},
+    "Xiaomi": {"screen": 3000, "battery": 1500, "motherboard": 6000, "charging_port": 1000, "buttons": 600,
+               "water_damage": 0},
+    "Google Pixel": {"screen": 4500, "battery": 2200, "motherboard": 7500, "charging_port": 1300, "buttons": 750,
+                     "water_damage": 0},
+    "Other": {"screen": 2500, "battery": 1200, "motherboard": 5000, "charging_port": 800, "buttons": 500,
+              "water_damage": 0}
+}
+
+PARTS_ANALOG = {
+    "iPhone": {"screen": 3500, "battery": 1800, "motherboard": 5000, "charging_port": 1000, "buttons": 500,
+               "water_damage": 0},
+    "Samsung": {"screen": 3000, "battery": 1500, "motherboard": 4500, "charging_port": 800, "buttons": 450,
+                "water_damage": 0},
+    "Xiaomi": {"screen": 2500, "battery": 1200, "motherboard": 4000, "charging_port": 700, "buttons": 400,
+               "water_damage": 0},
+    "Google Pixel": {"screen": 3200, "battery": 1600, "motherboard": 4800, "charging_port": 900, "buttons": 500,
+                     "water_damage": 0},
+    "Other": {"screen": 2000, "battery": 1000, "motherboard": 3500, "charging_port": 600, "buttons": 350,
+              "water_damage": 0}
+}
 
 
 def get_model_key(name):
@@ -76,6 +80,13 @@ def update_parts(*args):
     repair = get_repair_key(repair_name)
     parts_type = parts_type_var.get()
 
+    if repair == "water_damage":
+        parts_var.set("0 руб (запчасти не требуются)")
+        parts_type_menu.config(state="disabled")
+        return 0
+
+    parts_type_menu.config(state="normal")
+
     if parts_type == "Оригинал":
         price = PARTS_PRICES.get(model, {}).get(repair, 3000)
     else:
@@ -93,6 +104,13 @@ def update_labor(*args):
     price = LABOR_PRICES.get(model, {}).get(repair, 1500)
     labor_var.set(f"{price} руб")
 
+    if repair == "water_damage":
+        parts_var.set("0 руб (запчасти не требуются)")
+        parts_type_menu.config(state="disabled")
+    else:
+        parts_type_menu.config(state="normal")
+        update_parts()
+
 
 def calculate():
     try:
@@ -104,10 +122,13 @@ def calculate():
         urgency = get_urgency_key(urgency_name)
         parts_type = parts_type_var.get()
 
-        if parts_type == "Оригинал":
-            parts = PARTS_PRICES.get(model, {}).get(repair, 3000)
+        if repair == "water_damage":
+            parts = 0
         else:
-            parts = PARTS_ANALOG.get(model, {}).get(repair, 2000)
+            if parts_type == "Оригинал":
+                parts = PARTS_PRICES.get(model, {}).get(repair, 3000)
+            else:
+                parts = PARTS_ANALOG.get(model, {}).get(repair, 2000)
 
         labor = LABOR_PRICES.get(model, {}).get(repair, 1500)
 
@@ -133,24 +154,15 @@ def calculate():
             discount = labor * 0.15
             total = total - discount
 
-        comparison = compare_options(model, repair, urgency)
-
-        selected_text = f"ВЫБРАНО: {parts_type}"
-
         result_label.config(
-            text=f"{selected_text}\n\n"
+            text=f"ВЫБРАНО: {parts_type}\n\n"
                  f"Стоимость работы: {labor} руб\n"
                  f"Стоимость запчасти: {parts} руб\n"
                  f"Диагностика: {diagnostics} руб\n"
                  f"Услуги: {services} руб\n"
                  f"Коэффициент срочности: {multiplier}\n"
                  f"Скидка: {discount} руб\n"
-                 f"ИТОГО: {total:.2f} руб\n\n"
-                 f"Для сравнения:\n"
-                 f"Оригинал: {comparison['original']:.2f} руб\n"
-                 f"Аналог: {comparison['analog']:.2f} руб\n"
-                 f"Рекомендация: {comparison['best']}\n"
-                 f"Экономия: {comparison['savings']:.2f} руб",
+                 f"ИТОГО: {total:.2f} руб",
             fg="black"
         )
 
@@ -163,7 +175,7 @@ def calculate():
 
 window = tk.Tk()
 window.title("Калькулятор ремонта телефона")
-window.geometry("480x800")
+window.geometry("500x850")
 window.configure(bg="#f0f0f0")
 
 main_frame = tk.Frame(window, bg="#f0f0f0")
@@ -190,9 +202,9 @@ parts_type_menu.bind("<<ComboboxSelected>>", update_parts)
 
 tk.Label(main_frame, text="Стоимость запчасти", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(0, 5))
 parts_var = tk.StringVar(value="5000 руб")
-parts_label = tk.Label(main_frame, textvariable=parts_var, font=("Arial", 11), bg="#ffffff", relief="sunken",
+parts_entry = tk.Label(main_frame, textvariable=parts_var, font=("Arial", 11), bg="#ffffff", relief="sunken",
                        anchor="w")
-parts_label.pack(fill="x", pady=(0, 10), ipady=5)
+parts_entry.pack(fill="x", pady=(0, 10), ipady=5)
 
 tk.Label(main_frame, text="Стоимость работы", font=("Arial", 12, "bold"), bg="#f0f0f0").pack(anchor="w", pady=(0, 5))
 labor_var = tk.StringVar(value="2500 руб")
