@@ -1,17 +1,29 @@
 from config import PRICES, URGENCY, PROMOCODES
 
+PARTS_PRICES = {
+    "iPhone": {"screen": 5000, "battery": 2500, "motherboard": 8000},
+    "Samsung": {"screen": 4000, "battery": 2000, "motherboard": 7000},
+    "Xiaomi": {"screen": 3000, "battery": 1500, "motherboard": 6000},
+    "Google Pixel": {"screen": 4500, "battery": 2200, "motherboard": 7500},
+    "Other": {"screen": 2500, "battery": 1200, "motherboard": 5000}
+}
+
+PARTS_ANALOG = {
+    "iPhone": {"screen": 3500, "battery": 1800, "motherboard": 5000},
+    "Samsung": {"screen": 3000, "battery": 1500, "motherboard": 4500},
+    "Xiaomi": {"screen": 2500, "battery": 1200, "motherboard": 4000},
+    "Google Pixel": {"screen": 3200, "battery": 1600, "motherboard": 4800},
+    "Other": {"screen": 2000, "battery": 1000, "motherboard": 3500}
+}
+
 def calc_labor(model, repair):
-    """Считаем стоимость работы"""
     if model in PRICES:
         model_prices = PRICES[model]
     else:
         model_prices = PRICES["Other"]
-    
     return model_prices.get(repair, 0)
 
 def calc_total(data):
-    """Главная функция расчета"""
-    
     model = data["model"]
     repair = data["repair"]
     parts = data["parts"]
@@ -27,7 +39,6 @@ def calc_total(data):
         diagnostics = 500
     
     subtotal = labor + parts + diagnostics + services
-    
     multiplier = URGENCY[urgency]
     total = subtotal * multiplier
     
@@ -39,7 +50,7 @@ def calc_total(data):
         discount = labor * 0.15
         total = total - discount
     
-    result = {
+    return {
         "labor": labor,
         "parts": parts,
         "diagnostics": diagnostics,
@@ -49,27 +60,10 @@ def calc_total(data):
         "discount": discount,
         "total": total
     }
-    
-    return result
 
 def compare_options(model, repair, urgency):
-    """Сравниваем оригинал и аналог"""
-    
-    original_parts = {
-        "iPhone": 8000,
-        "Samsung": 6000,
-        "Xiaomi": 4500,
-        "Google Pixel": 7000,
-        "Other": 5000
-    }
-    
-    analog_parts = {
-        "iPhone": 3500,
-        "Samsung": 3000,
-        "Xiaomi": 2500,
-        "Google Pixel": 3200,
-        "Other": 2500
-    }
+    original_parts = PARTS_PRICES.get(model, {}).get(repair, 3000)
+    analog_parts = PARTS_ANALOG.get(model, {}).get(repair, 2000)
     
     labor = calc_labor(model, repair)
     
@@ -80,8 +74,8 @@ def compare_options(model, repair, urgency):
     
     multiplier = URGENCY[urgency]
     
-    original_total = (labor + original_parts.get(model, 5000) + diagnostics) * multiplier
-    analog_total = (labor + analog_parts.get(model, 2500) + diagnostics) * multiplier
+    original_total = (labor + original_parts + diagnostics) * multiplier
+    analog_total = (labor + analog_parts + diagnostics) * multiplier
     
     if original_total <= analog_total:
         best = "оригинал"
