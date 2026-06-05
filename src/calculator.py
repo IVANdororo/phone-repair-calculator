@@ -16,12 +16,14 @@ PARTS_ANALOG = {
     "Other": {"screen": 2000, "battery": 1000, "motherboard": 3500}
 }
 
+
 def calc_labor(model, repair):
     if model in PRICES:
         model_prices = PRICES[model]
     else:
         model_prices = PRICES["Other"]
     return model_prices.get(repair, 0)
+
 
 def calc_total(data):
     model = data["model"]
@@ -30,18 +32,18 @@ def calc_total(data):
     urgency = data["urgency"]
     services = data["services"]
     promocode = data["promocode"]
-    
+
     labor = calc_labor(model, repair)
-    
+
     if repair == "motherboard":
         diagnostics = 0
     else:
         diagnostics = 500
-    
+
     subtotal = labor + parts + diagnostics + services
     multiplier = URGENCY[urgency]
     total = subtotal * multiplier
-    
+
     discount = 0
     if promocode == "SERVICE10":
         discount = total * 0.10
@@ -49,7 +51,7 @@ def calc_total(data):
     elif promocode == "REMONT26":
         discount = labor * 0.15
         total = total - discount
-    
+
     return {
         "labor": labor,
         "parts": parts,
@@ -61,29 +63,30 @@ def calc_total(data):
         "total": total
     }
 
+
 def compare_options(model, repair, urgency):
     original_parts = PARTS_PRICES.get(model, {}).get(repair, 3000)
     analog_parts = PARTS_ANALOG.get(model, {}).get(repair, 2000)
-    
+
     labor = calc_labor(model, repair)
-    
+
     if repair == "motherboard":
         diagnostics = 0
     else:
         diagnostics = 500
-    
+
     multiplier = URGENCY[urgency]
-    
+
     original_total = (labor + original_parts + diagnostics) * multiplier
     analog_total = (labor + analog_parts + diagnostics) * multiplier
-    
+
     if original_total <= analog_total:
         best = "оригинал"
         savings = analog_total - original_total
     else:
         best = "аналог"
         savings = original_total - analog_total
-    
+
     return {
         "original": original_total,
         "analog": analog_total,
